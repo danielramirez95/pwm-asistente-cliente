@@ -44,10 +44,36 @@
   #inp{flex:1;background:transparent;border:none;color:var(--txt);padding:10px 0;font-size:15px;outline:none;min-width:0}
   #send{background:linear-gradient(135deg,var(--orange),#D97706);border:none;color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:18px;flex-shrink:0;box-shadow:0 4px 10px rgba(232,114,12,.4)}
   #send:active{transform:scale(.93)}
+
+  /* Splash de bienvenida */
+  #splash{position:absolute;inset:0;background:linear-gradient(160deg,#111827 0%,var(--slate) 60%,#2d3a4f 100%);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .6s,visibility .6s}
+  #splash.hide{opacity:0;visibility:hidden}
+  #splashLogo{width:96px;height:96px;border-radius:28px;background:linear-gradient(135deg,var(--orange),var(--orange2));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#fff;letter-spacing:1px;box-shadow:0 12px 40px rgba(232,114,12,.5);animation:splashPop .8s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes splashPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+  #splashName{color:#fff;font-size:22px;font-weight:700;letter-spacing:2px;animation:fadeUp .8s .3s both}
+  #splashSub{color:#9CA3AF;font-size:12px;letter-spacing:3px;text-transform:uppercase;animation:fadeUp .8s .5s both}
+  #splashBar{width:120px;height:3px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden;animation:fadeUp .8s .6s both}
+  #splashBarIn{height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--orange2));animation:load 1.8s .4s forwards}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @keyframes load{to{width:100%}}
+  /* Modo oscuro */
+  body.dark #app{--bg:#111827;--panel:#1F2937;--txt:#F3F4F6;--mut:#9CA3AF;--line:#374151}
+  body.dark .bot{border-color:var(--line)}
+  body.dark .chip{background:#1F2937}
+  body.dark .sys{background:#1F2937}
+  body.dark #inputRow{box-shadow:0 4px 16px rgba(0,0,0,.5)}
+  #darkBtn{position:absolute}
+
 </style>
 </head>
 <body>
 <div id="app">
+<div id="splash">
+  <div id="splashLogo">PWM</div>
+  <div id="splashName">PLATINUM</div>
+  <div id="splashSub">Wealth Management</div>
+  <div id="splashBar"><div id="splashBarIn"></div></div>
+</div>
 <header>
   <div class="hrow">
     <div id="logo">PWM</div>
@@ -62,6 +88,7 @@
     <button id="btnExcel">⬇️ Excel llenado</button>
     <button id="btnCSV">⬇️ CSV / JSON</button>
     <button id="btnPDF">📄 PDF Estado Financiero</button>
+    <button id="btnDark">🌙 Modo oscuro</button>
   </div>
   <input type="file" id="fileInput" accept=".xlsx" style="display:none">
   <div id="progress"><div id="progressBar"></div></div>
@@ -644,6 +671,14 @@ function download(blob,name){
 }
 sendBtn.onclick=handleSend;
 document.getElementById('menuBtn').onclick=()=>document.getElementById('menuPanel').classList.toggle('open');
+document.getElementById('btnDark').onclick=function(){
+  document.body.classList.toggle('dark');
+  const d=document.body.classList.contains('dark');
+  this.textContent=d?'☀️ Modo claro':'🌙 Modo oscuro';
+  try{localStorage.setItem('pwm_dark',d?'1':'0');}catch(e){}
+};
+try{if(localStorage.getItem('pwm_dark')==='1'){document.body.classList.add('dark');document.getElementById('btnDark').textContent='☀️ Modo claro';}}catch(e){}
+setTimeout(()=>{const s=document.getElementById('splash');if(s)s.classList.add('hide');},2400);
 inp.addEventListener('keydown',e=>{if(e.key==='Enter')handleSend();});
 
 /* ============ INICIO ============ */
